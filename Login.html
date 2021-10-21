@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <ul class="list">
+                <li><a href="Signup.html">Signup</a></li>
+                <li><a href="Login.html">Login</a></li>
+                <li><a href="Home.html">Home</a></li>
+            </ul>
+            <div class="clear"></div>
+        </div>
+    </div>
+    <form class="form">
+        <input pattern="[0-9a-zA-Z.@]{1,}" type="email" name="email" id="email" placeholder="Email" required>
+        <input pattern="[0-9a-zA-Z@]{8,}" type="password" name="password" id="password" placeholder="Password" required>
+        <input type="submit" value="Login">
+    </form>
+
+    <script>
+        var form = document.getElementsByClassName("form")[0];
+        var users;
+        window.addEventListener("load", () => {
+            users = localStorage.getItem( "users" );
+            users = JSON.parse(users);
+        });
+        
+        form.addEventListener("submit", () => {
+            event.preventDefault();
+            var fData = new FormData(form);
+            var e = fData.get("email");
+            var p = fData.get("password");
+            for( var i = 0; i < users.length; i++ ){
+                console.log( users[i] );
+                if( users[i].email === e ){
+                    if( users[i].password === p ){
+                        alert("Login Successful");
+                        form.reset();
+                        window.location = "Home.html";
+                        return;
+                    }
+                    else{
+                        alert("invalid Credential : Wrong Password");
+                        form.reset();
+                        return;
+                    }
+                }
+            }
+            alert("invalid Credential : No User Found");
+            form.reset();
+        });
+    </script>
+</body>
+</html>

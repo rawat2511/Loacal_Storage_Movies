@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Movie Website 1</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <ul class="list">
+                <li><a href="Signup.html">Signup</a></li>
+                <li><a href="Login.html">Login</a></li>
+                <li><a href="Home.html">Home</a></li>
+            </ul>
+            <div class="clear"></div>
+        </div>
+    </div>
+    <div id="sortByRating">
+        <select name="sort" id="sort">
+            <option value="unsorted">Unsorted</option>
+            <option value="lowToHigh">Low to High</option>
+            <option value="highToLow">High to Low</option>
+        </select>
+    </div>
+    <div id="carousel"></div>
+    <div id="movies">
+    </div>
+    <script src="./db.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js" integrity="sha512-Tn2m0TIpgVyTzzvmxLNuqbSJH3JP8jm+Cy3hvHrW7ndTDcJ1w5mBiksqDBb8GpE2ksktFvDB/ykZ0mDpsZj20w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        var carousel = document.getElementById("carousel");
+        var colours = ["lightpink", "skyblue", "lightgreen", "violet", "indigo", "yellow", "orange", "brown", "teal"];
+        var movies = localStorage.getItem("movies");
+        movies = JSON.parse( movies );
+
+        window.addEventListener("load", () => {
+            var div = document.createElement("div");
+            div.id = "outer-div";
+            var img = document.createElement("img");
+            img.src = movies[0].Poster;
+            div.appendChild( img );
+            carousel.append( div );
+            var index = 1;
+            setInterval( () => {
+                img.src = movies[ index % (movies.length) ].Poster;
+                div.style.backgroundColor = colours[index % (colours.length)];
+                img.style.backgroundColor = colours[(index+2) % (colours.length)];
+                index++;
+            }, 3000);
+
+            displayMovies(movies);
+        });
+
+        function displayMovies(movies){
+            var div = document.getElementById("movies");
+            div.innerHTML = "";
+            for( var i = 0; i < movies.length; i++ ){
+                var movie = document.createElement("div");
+                movie.className = "movie";
+
+                var name = document.createElement("h1");
+                name.textContent = movies[i].Title;
+
+                var image = document.createElement("img");
+                image.src = movies[i].Poster;
+                image.className = "movie-img";
+
+                var date = document.createElement("p");
+                date.textContent = "Date of Release: " + movies[i].Released;
+
+                var rating = document.createElement("h2");
+                rating.textContent = movies[i].Ratings[0].Value;
+
+                var star = document.createElement("span");
+                star.style.paddingTop = "5px";
+
+                var rate = document.createElement("div");
+                rate.className = "rate";
+                star.innerHTML = `<i class="fa fa-star" aria-hidden="true"></i>`;
+            
+                rate.append( star, rating );
+                movie.append( image, name, date, rate );
+                div.appendChild( movie );
+            }
+        }
+
+        // Ratings : [{ "Source": "Internet Movie Database", "Value": "8.7/10" }], 
+
+        function sortLowToHigh( a, b ){
+        if( Number(a.Ratings[0].Value.split("/")[0]) > Number(b.Ratings[0].Value.split("/")[0])){
+            return 1;
+        }
+        else if( Number(a.Ratings[0].Value.split("/")[0]) < Number(b.Ratings[0].Value.split("/")[0]) ){
+            return -1;
+        }
+        return 0;
+        }
+        
+        function sortHighToLow( b, a ){
+        if( Number(a.Ratings[0].Value.split("/")[0]) > Number(b.Ratings[0].Value.split("/")[0])){
+            return 1;
+        }
+        else if( Number(a.Ratings[0].Value.split("/")[0]) < Number(b.Ratings[0].Value.split("/")[0]) ){
+            return -1;
+        }
+        return 0;
+        }
+
+        var sort = document.getElementById("sort");
+        sort.addEventListener( "click", () => {
+            console.log( sort.value );
+            if( sort.value === "unsorted" ){
+                displayMovies(movies);
+            }
+            else if( sort.value === "lowToHigh"){
+                var moviesLowToHigh = movies.sort( sortLowToHigh );
+                console.log( moviesLowToHigh );
+                displayMovies( moviesLowToHigh );
+            }
+            else{
+                var moviesHighToLow = movies.sort( sortHighToLow );
+                console.log( moviesHighToLow );
+                displayMovies( moviesHighToLow );
+            }
+        });
+    </script>
+</body>
+</html>
